@@ -5,7 +5,8 @@ all local
 ## Features
 Alex:
 - markdown viewer based 
-- Latex Support 
+- Latex Support
+- quick auto correct 
 
 Eric: 
 - Google account syncing in app 
