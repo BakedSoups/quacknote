@@ -1,22 +1,21 @@
-import { invoke } from "@tauri-apps/api/tauri";
+import "./styles.css";
 
-let greetInputEl: HTMLInputElement | null;
-let greetMsgEl: HTMLElement | null;
+const notes = document.querySelector<HTMLTextAreaElement>("#notes")!;
+const status = document.querySelector<HTMLParagraphElement>("#status")!;
 
-async function greet() {
-  if (greetMsgEl && greetInputEl) {
-    // Learn more about Tauri commands at https://v1.tauri.app/v1/guides/features/command
-    greetMsgEl.textContent = await invoke("greet", {
-      name: greetInputEl.value,
-    });
-  }
+// Restore saved notes when the app opens.
+try {
+  notes.value = localStorage.getItem("notes") ?? "";
+} catch {
+  status.textContent = "Could not load saved notes.";
 }
 
-window.addEventListener("DOMContentLoaded", () => {
-  greetInputEl = document.querySelector("#greet-input");
-  greetMsgEl = document.querySelector("#greet-msg");
-  document.querySelector("#greet-form")?.addEventListener("submit", (e) => {
-    e.preventDefault();
-    greet();
-  });
+// Save whenever the text changes.
+notes.addEventListener("input", () => {
+  try {
+    localStorage.setItem("notes", notes.value);
+    status.textContent = "Saved.";
+  } catch {
+    status.textContent = "Could not save. Copy your notes somewhere safe.";
+  }
 });
