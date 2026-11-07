@@ -36,3 +36,25 @@ textarea:focus {
   color: #aaa;
   font-size: 14px;
 }
+
+.cm-editor {
+  border: 1px solid #332e2e;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.cm-scroller {
+  min-height: 160px;
+}
+
+#preview li:has(> input[type="checkbox"]),
+#preview li:has(> p > input[type="checkbox"]) {
+  list-style: none;
+}
+
+#preview input[type="checkbox"] {
+  margin-left: -1.4em;
+  margin-right: 0.4em;
+  accent-color: #80bfff;
+  cursor: pointer;
+}

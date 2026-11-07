@@ -11,10 +11,18 @@
     "lint": "eslint ."
   },
   "dependencies": {
+    "@codemirror/lang-markdown": "^6.5.2",
+    "@codemirror/language": "^6.13.1",
+    "@codemirror/view": "^6.43.15",
     "@tauri-apps/api": "^2.12.4",
     "@tauri-apps/plugin-shell": "^2.5.0",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@uiw/react-codemirror": "^4.25.12",
     "dompurify": "^3.4.17",
-    "marked": "^18.1.1"
+    "marked": "^18.1.1",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
