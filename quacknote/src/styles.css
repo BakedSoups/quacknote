@@ -53,8 +53,32 @@ textarea:focus {
 }
 
 #preview input[type="checkbox"] {
+  /* Draw a hollow box instead of the browser's default control. */
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border: 1.5px solid #aaa;
+  border-radius: 3px;
+  background: transparent;
   margin-left: -1.4em;
   margin-right: 0.4em;
-  accent-color: #80bfff;
+  vertical-align: middle;
   cursor: pointer;
+  display: inline-grid;
+  place-content: center;
+}
+
+/* Two rotated borders form a checkmark without filling the box. */
+#preview input[type="checkbox"]:checked::after {
+  content: "";
+  width: 4px;
+  height: 8px;
+  border: solid #80bfff;
+  border-width: 0 2px 2px 0;
+  transform: translateY(-1px) rotate(45deg);
+}
+
+#preview input[type="checkbox"]:focus-visible {
+  outline: 2px solid #80bfff;
+  outline-offset: 3px;
 }
