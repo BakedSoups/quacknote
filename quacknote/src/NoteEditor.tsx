@@ -20,7 +20,10 @@ const extensions = [
   editingKeys,
   EditorView.lineWrapping,
 ];
-const basicSetup = { lineNumbers: false };
+const basicSetup = {
+  lineNumbers: false,
+  highlightSelectionMatches: false,
+};
 
 export default function NoteEditor({
   value,
