@@ -45,6 +45,8 @@ function decorate(view: EditorView): DecorationSet {
 
   syntaxTree(view.state).iterate({
     enter(node) {
+      // The image extension owns the complete image reference and preview.
+      if (node.name === "Image") return false;
       if (node.name === "FencedCode" || node.name === "CodeBlock") {
         const editing = isEditing(node.from, node.to);
         const first = view.state.doc.lineAt(node.from).number;
