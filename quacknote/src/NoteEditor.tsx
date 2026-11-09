@@ -1,9 +1,10 @@
 import CodeMirror from "@uiw/react-codemirror";
-import { markdown } from "@codemirror/lang-markdown";
+import { useMemo } from "react";
 import { EditorView } from "@codemirror/view";
-import { pythonLanguage } from "@codemirror/lang-python";
+import { noteLanguageForPositions, unmatchedFencePositions } from "./markdown/noteLanguage";
 import { liveMarkdown, liveMarkdownTheme } from "./markdown/liveMarkdown";
 import { taskCheckboxes } from "./markdown/taskCheckboxes";
+import { editingKeys } from "./markdown/editingKeys";
 
 
 type NoteEditorProps = {
@@ -13,28 +14,34 @@ type NoteEditorProps = {
 
 // Configure these once, outside the component.
 const extensions = [
-  markdown({  
-    // CodeMirror uses a Python parser inside fences labelled python or py.
-    codeLanguages: (name) => /^(python|py)$/i.test(name) ? pythonLanguage : null,
-  }),
   liveMarkdown,
   liveMarkdownTheme,
   taskCheckboxes(),
+  editingKeys,
   EditorView.lineWrapping,
 ];
+const basicSetup = { lineNumbers: false };
 
 export default function NoteEditor({
   value,
   onChange,
 }: NoteEditorProps) {
+  // Ordinary typing should not reconfigure the editor. Only rebuild the
+  // language when the positions of unmatched code fences actually change.
+  const fenceKey = JSON.stringify(unmatchedFencePositions(value));
+  const language = useMemo(
+    () => noteLanguageForPositions(JSON.parse(fenceKey) as number[]),
+    [fenceKey],
+  );
+  const editorExtensions = useMemo(() => [language, ...extensions], [language]);
   return (
     <CodeMirror
       theme="dark"
       value={value}
-      extensions={extensions}
-      onChange={(updatedText) => onChange(updatedText)}
+      extensions={editorExtensions}
+      onChange={onChange}
       placeholder="Start writing..."
-      basicSetup={{ lineNumbers: false }}
+      basicSetup={basicSetup}
     />
   );
 }

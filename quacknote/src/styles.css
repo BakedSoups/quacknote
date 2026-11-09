@@ -69,6 +69,12 @@ textarea:focus {
   place-content: center;
 }
 
+.cm-live-bullet {
+  display: inline-block;
+  min-width: 0.6em;
+  color: #e8e8e8;
+}
+
 /* Two rotated borders form a checkmark without filling the box. */
 #preview input[type="checkbox"]:checked::after,
 .task-checkbox:checked::after {
@@ -117,4 +123,14 @@ textarea:focus {
   line-height: 0;
   padding: 0;
   overflow: hidden;
+}
+
+/* The parser may still recognize Python inside an unfinished fence.
+   Keep it visually plain until a matching closing fence is restored. */
+.cm-editor .cm-live-unclosed-fence,
+.cm-editor .cm-live-unclosed-fence span {
+  color: inherit !important;
+  font-style: normal !important;
+  font-weight: normal !important;
+  text-decoration: none !important;
 }

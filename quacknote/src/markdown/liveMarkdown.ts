@@ -11,6 +11,24 @@ class HorizontalRule extends WidgetType {
   }
 }
 
+class Bullet extends WidgetType {
+  constructor(readonly symbol: string) {
+    super();
+  }
+
+  eq(other: Bullet) {
+    return this.symbol === other.symbol;
+  }
+
+  toDOM() {
+    const bullet = document.createElement("span");
+    bullet.textContent = this.symbol;
+    bullet.className = "cm-live-bullet";
+    bullet.setAttribute("aria-hidden", "true");
+    return bullet;
+  }
+}
+
 // Decorations change presentation only. The document stays plain Markdown,
 // so saving, selecting text, and undo still operate on the original note.
 function decorate(view: EditorView): DecorationSet {
@@ -39,6 +57,14 @@ function decorate(view: EditorView): DecorationSet {
             fences.add(view.state.doc.lineAt(child.from).number);
           }
         }
+        // Markdown's parser accepts unclosed fences, but live preview should
+        // revert to literal text as soon as the closing fence is removed.
+        if (node.name === "FencedCode" && fences.size < 2) {
+          decorations.push(Decoration.mark({
+            class: "cm-live-unclosed-fence",
+          }).range(node.from, node.to));
+          return false;
+        }
         for (let number = first; number <= last; number++) {
           decorations.push(Decoration.line({
             class: !editing && fences.has(number)
@@ -55,6 +81,24 @@ function decorate(view: EditorView): DecorationSet {
         decorations.push(Decoration.replace({
           widget: new HorizontalRule(),
         }).range(node.from, node.to));
+      }
+
+      if (node.name === "ListMark") {
+        const marker = view.state.doc.sliceString(node.from, node.to);
+        const rest = view.state.doc.sliceString(node.to, view.state.doc.lineAt(node.to).to);
+        // Numbered lists keep their numbers. Task widgets already replace
+        // their whole marker, so don't add a second decoration over them.
+        if (/^[-+*]$/.test(marker) && !/^[\t ]+\[[ xX]\][\t ]/.test(rest)) {
+          // Count actual list nesting, rather than assuming a fixed number
+          // of spaces. Repeat the three markers for deeper nested lists.
+          let depth = -1;
+          for (let parent = node.node.parent; parent; parent = parent.parent) {
+            if (parent.name === "BulletList" || parent.name === "OrderedList") depth++;
+          }
+          const symbol = ["-", "•", "*"][Math.max(0, depth) % 3];
+          decorations.push(Decoration.replace({ widget: new Bullet(symbol) })
+            .range(node.from, node.to));
+        }
       }
 
       const heading = /^ATXHeading([1-6])$/.exec(node.name);

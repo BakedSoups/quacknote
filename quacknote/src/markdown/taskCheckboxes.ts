@@ -105,6 +105,7 @@ function buildCheckboxes(view: EditorView): DecorationSet {
     decorations.push(
       Decoration.replace({
         widget: new TaskCheckbox(checked, markerFrom),
+        inclusive: false,
       }).range(
         line.from + match[1].length,
         line.from + match[0].length,
@@ -143,6 +144,11 @@ export function taskCheckboxes() {
     },
     {
       decorations: (plugin) => plugin.decorations,
+      // Cursor movement must skip the hidden Markdown marker, rather than
+      // leaving the caret inside text replaced by the checkbox widget.
+      provide: (plugin) => EditorView.atomicRanges.of(
+        (view) => view.plugin(plugin)?.decorations ?? Decoration.none,
+      ),
     },
   );
 }
