@@ -11,6 +11,7 @@ type NoteEditorProps = {
   value: string;
   onChange: (markdown: string) => void;
   editable?: boolean;
+  theme?: "light" | "dark";
 };
 
 // Configure these once, outside the component.
@@ -30,6 +31,7 @@ export default function NoteEditor({
   value,
   onChange,
   editable = true,
+  theme = "dark",
 }: NoteEditorProps) {
   // Ordinary typing should not reconfigure the editor. Only rebuild the
   // language when the positions of unmatched code fences actually change.
@@ -41,7 +43,7 @@ export default function NoteEditor({
   const editorExtensions = useMemo(() => [language, ...extensions], [language]);
   return (
     <CodeMirror
-      theme="dark"
+      theme={theme}
       editable={editable}
       value={value}
       extensions={editorExtensions}
