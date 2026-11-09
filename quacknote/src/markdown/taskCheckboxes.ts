@@ -32,8 +32,10 @@ class TaskCheckbox extends WidgetType {
     const checkbox = document.createElement("input");
 
     checkbox.type = "checkbox";
+    checkbox.className = "task-checkbox";
     checkbox.checked = this.checked;
-    checkbox.setAttribute("aria-label", "Mark task complete");
+    checkbox.setAttribute("aria-label", this.checked ? "Mark task incomplete" : "Mark task complete");
+    checkbox.addEventListener("mousedown", (event) => event.preventDefault());
 
     checkbox.addEventListener("change", () => {
       // Change the Markdown itself, rather than keeping a separate
@@ -59,9 +61,8 @@ class TaskCheckbox extends WidgetType {
 
 // Markdown-looking text inside a code block should stay plain text.
 function isInsideCode(view: EditorView, position: number) {
-  let node = syntaxTree(view.state).resolveInner(position, 1);
-
-  for (; node; node = node.parent!) {
+  const start = syntaxTree(view.state).resolveInner(position, 1);
+  for (let node: typeof start | null = start; node; node = node.parent) {
     if (
       node.name === "FencedCode" ||
       node.name === "CodeBlock"
@@ -91,21 +92,21 @@ function buildCheckboxes(view: EditorView): DecorationSet {
     // The final space is required, so typing "- [ ]" alone
     // does not turn it into a checkbox yet.
     //
-    // This initial version handles top-level "-" task lists.
-    const match = /^- +\[([ xX])\] /.exec(line.text);
+    // Preserve indentation and support unordered and numbered tasks.
+    const match = /^(\s*)(?:[-+*]|\d+[.)])[\t ]+\[([ xX])\][\t ]/.exec(line.text);
 
-    if (!match || isInsideCode(view, line.from + 1)) {
+    if (!match || isInsideCode(view, line.from + match[1].length + 1)) {
       continue;
     }
 
     const markerFrom = line.from + match[0].indexOf("[");
-    const checked = match[1].toLowerCase() === "x";
+    const checked = match[2].toLowerCase() === "x";
 
     decorations.push(
       Decoration.replace({
         widget: new TaskCheckbox(checked, markerFrom),
       }).range(
-        line.from,
+        line.from + match[1].length,
         line.from + match[0].length,
       ),
     );

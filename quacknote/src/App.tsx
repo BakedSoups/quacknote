@@ -1,6 +1,5 @@
 import { useState } from "react";
 import NoteEditor from "./NoteEditor";
-import MarkdownPreview from "./MarkdownPreview";
 export default function App() {
   const [notes, setNotes] = useState(
     () => localStorage.getItem("notes") ?? ""
@@ -20,8 +19,6 @@ export default function App() {
         onChange={updateNotes}
       />
 
-      <h2>Preview</h2>
-      <MarkdownPreview value={notes} onChange={updateNotes} />
     </main>
   );
 }

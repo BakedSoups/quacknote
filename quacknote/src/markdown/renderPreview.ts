@@ -1,6 +1,7 @@
 import { markdownLanguage } from "@codemirror/lang-markdown";
 import { marked, Renderer } from "marked";
 import type { Tokens } from "marked";
+import hljs from "highlight.js";
 
 // Match task markers only at the beginning of a Markdown list item.
 const taskMarker = /^(?:[-+*]|\d+[.)])[\t ]+\[([ xX])\](?=[\t ]|$)/;
@@ -62,6 +63,26 @@ export function renderPreview(source: string) {
       return `<input type="checkbox" data-task-offset="${this.offset}"`
         + ` aria-label="Mark task complete"${token.checked ? " checked" : ""}> `;
     }
+    // module for code highlighting
+    override code(token: Tokens.Code) {
+      // The first word after ``` identifies the language.
+      const language = token.lang?.trim().split(/\s+/)[0];
+
+      // Let marked render plain code when no supported language is given.
+      // This also ensures that the text is properly escaped.
+      if (!language || !hljs.getLanguage(language)) {
+        return super.code(token);
+      }
+
+      // Highlight.js escapes the code and adds spans for its syntax.
+      const highlighted = hljs.highlight(token.text, {
+        language,
+        ignoreIllegals: true,
+      }).value;
+
+      return `<pre><code class="hljs">${highlighted}</code></pre>\n`;
+    }
+
   }
 
   return marked.parser(tokens, { renderer: new TaskRenderer() });

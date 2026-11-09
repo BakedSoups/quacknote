@@ -1,5 +1,8 @@
 import CodeMirror from "@uiw/react-codemirror";
 import { markdown } from "@codemirror/lang-markdown";
+import { EditorView } from "@codemirror/view";
+import { liveMarkdown, liveMarkdownTheme } from "./markdown/liveMarkdown";
+import { taskCheckboxes } from "./markdown/taskCheckboxes";
 
 
 type NoteEditorProps = {
@@ -10,6 +13,10 @@ type NoteEditorProps = {
 // Configure these once, outside the component.
 const extensions = [
   markdown(),
+  liveMarkdown,
+  liveMarkdownTheme,
+  taskCheckboxes(),
+  EditorView.lineWrapping,
 ];
 
 export default function NoteEditor({

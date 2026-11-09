@@ -1,5 +1,6 @@
 import DOMPurify from "dompurify";
 import { renderPreview } from "./markdown/renderPreview";
+import { toggleTask } from "./markdown/toggleTask";
 
 type MarkdownPreviewProps = {
   value: string;
@@ -21,16 +22,16 @@ export default function MarkdownPreview({
       id="preview"
       onChange={(event) => {
         const checkbox = event.target;
-        if (!(checkbox instanceof HTMLInputElement)) return;
+        // Only handle task checkboxes produced by our renderer.
+        if (
+          !(checkbox instanceof HTMLInputElement) ||
+          checkbox.type !== "checkbox" ||
+          checkbox.dataset.taskOffset === undefined
+        ) {
+          return;
+        }
         const offset = Number(checkbox.dataset.taskOffset);
-        if (!Number.isInteger(offset) || offset < 0) return;
-        // Update the Markdown, which also updates the editor and saved note.
-        if (!/^\[[ xX]\]$/.test(value.slice(offset, offset + 3))) return;
-        onChange(
-          value.slice(0, offset)
-          + (checkbox.checked ? "[x]" : "[ ]")
-          + value.slice(offset + 3),
-        );
+        onChange(toggleTask(value, offset, checkbox.checked));
       }}
       dangerouslySetInnerHTML={{ __html: safeHtml }}
     />
