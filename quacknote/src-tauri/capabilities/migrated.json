@@ -8,6 +8,8 @@
   "permissions": [
     "core:default",
     "core:window:allow-destroy",
+    "core:window:allow-is-fullscreen",
+    "core:window:allow-set-fullscreen",
     "shell:allow-open",
     "shell:default"
   ]

@@ -83,6 +83,7 @@ button:focus-visible, input:focus-visible {
 .tab-bar { display: flex; align-items: center; gap: 6px; min-height: 52px; padding: 8px 14px 0 12px; background: var(--bar); }
 .active-tab { align-self: stretch; display: flex; align-items: center; min-width: 0; max-width: 280px; padding: 8px 18px; border-radius: 10px 10px 0 0; background: var(--bg); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 14px; }
 .tab-spacer { flex: 1; }
+.fullscreen-toggle { margin-bottom: 7px; }
 .tools-menu { position: relative; margin-bottom: 7px; }
 .tools-menu > summary { display: flex; align-items: center; gap: 7px; list-style: none; cursor: pointer; padding: 6px 10px; border-radius: 5px; color: var(--muted); font-size: 13px; }
 .tools-menu > summary::-webkit-details-marker { display: none; }
