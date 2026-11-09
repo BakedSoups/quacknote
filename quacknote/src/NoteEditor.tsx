@@ -1,6 +1,7 @@
 import CodeMirror from "@uiw/react-codemirror";
 import { markdown } from "@codemirror/lang-markdown";
 import { EditorView } from "@codemirror/view";
+import { pythonLanguage } from "@codemirror/lang-python";
 import { liveMarkdown, liveMarkdownTheme } from "./markdown/liveMarkdown";
 import { taskCheckboxes } from "./markdown/taskCheckboxes";
 
@@ -12,7 +13,10 @@ type NoteEditorProps = {
 
 // Configure these once, outside the component.
 const extensions = [
-  markdown(),
+  markdown({  
+    // CodeMirror uses a Python parser inside fences labelled python or py.
+    codeLanguages: (name) => /^(python|py)$/i.test(name) ? pythonLanguage : null,
+  }),
   liveMarkdown,
   liveMarkdownTheme,
   taskCheckboxes(),

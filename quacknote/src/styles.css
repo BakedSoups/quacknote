@@ -89,3 +89,32 @@ textarea:focus {
 .task-checkbox {
   margin-left: 0;
 }
+
+/* Override syntax-token colors inside headings without affecting code. */
+.cm-editor .cm-live-heading,
+.cm-editor .cm-live-heading span {
+  color: #e8e8e8;
+}
+
+.cm-live-rule {
+  display: inline-block;
+  width: 100%;
+  border-top: 1px solid #666;
+  vertical-align: middle;
+}
+
+.cm-editor .cm-line.cm-live-code {
+  background: #1b1d23;
+  font-family: ui-monospace, monospace;
+  padding-left: 12px;
+  padding-right: 12px;
+}
+
+/* Reveal these lines again when the cursor enters the code block. */
+.cm-editor .cm-line.cm-live-fence-hidden {
+  height: 0;
+  min-height: 0;
+  line-height: 0;
+  padding: 0;
+  overflow: hidden;
+}

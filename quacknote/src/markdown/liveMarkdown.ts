@@ -1,6 +1,15 @@
 import { syntaxTree } from "@codemirror/language";
-import { Decoration, EditorView, ViewPlugin } from "@codemirror/view";
+import { Decoration, EditorView, ViewPlugin, WidgetType } from "@codemirror/view";
 import type { DecorationSet, ViewUpdate } from "@codemirror/view";
+
+class HorizontalRule extends WidgetType {
+  toDOM() {
+    const rule = document.createElement("span");
+    rule.className = "cm-live-rule";
+    rule.setAttribute("role", "separator");
+    return rule;
+  }
+}
 
 // Decorations change presentation only. The document stays plain Markdown,
 // so saving, selecting text, and undo still operate on the original note.
@@ -18,8 +27,35 @@ function decorate(view: EditorView): DecorationSet {
 
   syntaxTree(view.state).iterate({
     enter(node) {
-      // Leave examples inside code blocks alone.
-      if (node.name === "FencedCode" || node.name === "CodeBlock") return false;
+      if (node.name === "FencedCode" || node.name === "CodeBlock") {
+        const editing = isEditing(node.from, node.to);
+        const first = view.state.doc.lineAt(node.from).number;
+        const last = view.state.doc.lineAt(node.to).number;
+        const fences = new Set<number>();
+        // Use syntax nodes rather than a regex so code that merely contains
+        // backticks cannot accidentally be hidden as a closing fence.
+        for (let child = node.node.firstChild; child; child = child.nextSibling) {
+          if (child.name === "CodeMark") {
+            fences.add(view.state.doc.lineAt(child.from).number);
+          }
+        }
+        for (let number = first; number <= last; number++) {
+          decorations.push(Decoration.line({
+            class: !editing && fences.has(number)
+              ? "cm-live-fence-hidden"
+              : "cm-live-code",
+          }).range(view.state.doc.line(number).from));
+        }
+        // Keep headings and task-like text inside code literal. Syntax
+        // coloring is handled by the language parser, not these decorations.
+        return false;
+      }
+
+      if (node.name === "HorizontalRule" && !isEditing(node.from, node.to)) {
+        decorations.push(Decoration.replace({
+          widget: new HorizontalRule(),
+        }).range(node.from, node.to));
+      }
 
       const heading = /^ATXHeading([1-6])$/.exec(node.name);
       if (heading) {
