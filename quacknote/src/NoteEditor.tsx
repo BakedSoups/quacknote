@@ -10,6 +10,7 @@ import { editingKeys } from "./markdown/editingKeys";
 type NoteEditorProps = {
   value: string;
   onChange: (markdown: string) => void;
+  editable?: boolean;
 };
 
 // Configure these once, outside the component.
@@ -28,6 +29,7 @@ const basicSetup = {
 export default function NoteEditor({
   value,
   onChange,
+  editable = true,
 }: NoteEditorProps) {
   // Ordinary typing should not reconfigure the editor. Only rebuild the
   // language when the positions of unmatched code fences actually change.
@@ -40,6 +42,7 @@ export default function NoteEditor({
   return (
     <CodeMirror
       theme="dark"
+      editable={editable}
       value={value}
       extensions={editorExtensions}
       onChange={onChange}
